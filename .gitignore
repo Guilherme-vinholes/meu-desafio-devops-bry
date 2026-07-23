@@ -24,9 +24,30 @@ profile.cov
 go.work
 go.work.sum
 
-# env file
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+*.tfvars
+*.tfvars.json
+.terraform.lock.hcl
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Ansible
+*.retry
+.vault_pass
+
+# Secrets / env
 .env
+.env.*
+*.pem
+*.key
 
 # Editor/IDE
-# .idea/
-# .vscode/
+.idea/
+.vscode/
