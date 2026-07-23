@@ -1,0 +1,13 @@
+# Copie este arquivo para terraform.tfvars (ja esta no .gitignore) e preencha com valores reais.
+# Nunca commitar o terraform.tfvars de verdade.
+
+admin_cidr     = "203.0.113.10/32" # seu IP publico atual, formato CIDR /32
+ssh_public_key = "ssh-ed25519 AAAA... seu-usuario@sua-maquina"
+db_password    = "defina-uma-senha-forte-aqui"
+
+# Opcionais (ja tem default sensato, so sobrescreva se precisar):
+# aws_region           = "us-east-1"
+# project_name         = "bry-desafio"
+# master_instance_type = "t3.small"
+# worker_instance_type = "t3.micro"
+# worker_count         = 2
