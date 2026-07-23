@@ -26,5 +26,12 @@ services:
       postgres:
         condition: service_healthy
 
+  frontend:
+    build: ./frontend
+    ports:
+      - "8081:80"
+    depends_on:
+      - api
+
 volumes:
   pgdata:
