@@ -15,8 +15,8 @@ module "security" {
 module "compute" {
   source = "../../modules/compute"
 
-  project_name       = var.project_name
-  public_subnet_ids  = module.network.public_subnet_ids
+  project_name      = var.project_name
+  public_subnet_ids = module.network.public_subnet_ids
   security_group_ids = [
     module.security.web_sg_id,
     module.security.ssh_sg_id,

@@ -1,10 +1,15 @@
 ---
+- name: Baixar o instalador do K3s
+  ansible.builtin.get_url:
+    url: https://get.k3s.io
+    dest: /tmp/get-k3s.sh
+    mode: "0755"
+
 - name: Instalar K3s agent e conectar ao master (via IP privado, trafego cluster-internal)
-  ansible.builtin.shell: |
-    curl -sfL https://get.k3s.io | \
-      INSTALL_K3S_VERSION="{{ k3s_version }}" \
-      K3S_URL="https://{{ hostvars[groups['k3s_master'][0]]['ansible_default_ipv4']['address'] }}:6443" \
-      K3S_TOKEN="{{ hostvars[groups['k3s_master'][0]]['k3s_node_token'] }}" \
-      sh -
+  ansible.builtin.command: /tmp/get-k3s.sh
+  environment:
+    INSTALL_K3S_VERSION: "{{ k3s_version }}"
+    K3S_URL: "https://{{ hostvars[groups['k3s_master'][0]]['ansible_default_ipv4']['address'] }}:6443"
+    K3S_TOKEN: "{{ hostvars[groups['k3s_master'][0]]['k3s_node_token'] }}"
   args:
     creates: /usr/local/bin/k3s-agent

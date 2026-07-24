@@ -1,12 +1,17 @@
 ---
 # Traefik e desabilitado porque o Nginx Ingress Controller e instalado explicitamente
 # via manifests em k8s/ingress/ (ver docs/adr) — evita dois ingress controllers concorrendo.
+- name: Baixar o instalador do K3s
+  ansible.builtin.get_url:
+    url: https://get.k3s.io
+    dest: /tmp/get-k3s.sh
+    mode: "0755"
+
 - name: Instalar K3s server (control-plane)
-  ansible.builtin.shell: |
-    curl -sfL https://get.k3s.io | \
-      INSTALL_K3S_VERSION="{{ k3s_version }}" \
-      INSTALL_K3S_EXEC="server --disable traefik --write-kubeconfig-mode 644" \
-      sh -
+  ansible.builtin.command: /tmp/get-k3s.sh
+  environment:
+    INSTALL_K3S_VERSION: "{{ k3s_version }}"
+    INSTALL_K3S_EXEC: "server --disable traefik --write-kubeconfig-mode 644"
   args:
     creates: /usr/local/bin/k3s
 
