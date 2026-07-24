@@ -14,6 +14,7 @@ on:
     paths:
       - "infra/**"
       - "k8s/**"
+  workflow_dispatch: {} # permite rodar sob demanda pela aba Actions, sem depender de um PR tocar infra/k8s
 
 jobs:
   terraform:
