@@ -1,0 +1,18 @@
+# Values para o chart oficial ingress-nginx/ingress-nginx.
+# Instalacao (ver README.md deste diretorio para o comando completo).
+#
+# type: LoadBalancer funciona neste cluster porque o K3s ja vem com o ServiceLB
+# (klipper-lb) habilitado (o Ansible so desabilitou o Traefik, nao o ServiceLB) -
+# ele expoe as portas 80/443 diretamente nos IPs publicos dos nodes, sem precisar
+# de um Elastic Load Balancer da AWS.
+controller:
+  replicaCount: 2
+  service:
+    type: LoadBalancer
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
