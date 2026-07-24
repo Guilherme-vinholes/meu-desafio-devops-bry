@@ -28,7 +28,20 @@ prometheus:
         memory: 512Mi
 
 alertmanager:
-  enabled: false # fora de escopo para o desafio - reduz consumo de memoria
+  enabled: true
+  alertmanagerSpec:
+    resources:
+      requests:
+        cpu: 20m
+        memory: 32Mi
+      limits:
+        cpu: 100m
+        memory: 64Mi
+  # Sem receiver externo configurado (nenhum webhook/SMTP/Slack disponivel neste
+  # desafio) - o Alertmanager roda com o receiver "null" default do chart, ou
+  # seja, recebe e avalia os alertas do Prometheus mas nao notifica ninguem.
+  # Em um ambiente real, seria so adicionar um `config.receivers` apontando para
+  # o canal desejado (Slack/e-mail/PagerDuty); o mecanismo ja esta operacional.
 
 # kube-prometheus-stack instala varios exporters/regras pesados por padrao;
 # desabilitamos os que menos importam para uma API simples de 3 replicas.

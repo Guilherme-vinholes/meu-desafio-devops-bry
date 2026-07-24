@@ -115,6 +115,17 @@ helm install monitoring prometheus-community/kube-prometheus-stack \
   --set grafana.adminPassword="<defina-uma-senha>"
 ```
 
+O Alertmanager sobe junto (`alertmanager.enabled: true` desde o hotfix `1.0.2`) com o
+receiver `null` default do chart — recebe e avalia os alertas do Prometheus, mas não
+notifica nenhum canal externo (nenhum Slack/e-mail/PagerDuty disponível neste ambiente).
+Para religar as notificações de verdade, defina `alertmanager.config.receivers` no
+`values-kube-prometheus-stack.yaml` apontando para o canal desejado.
+
+O `HorizontalPodAutoscaler` de `api`/`frontend` (aplicado junto com `kubectl apply -k
+../base` no passo 6) usa o metrics-server já embutido no K3s — nada extra a instalar
+aqui. Confirme com `kubectl -n bry-desafio get hpa` que a coluna `TARGETS` mostra um
+valor (ex: `3%/70%`) em vez de `<unknown>/70%`.
+
 ## 9. Smoke test
 
 ```bash
