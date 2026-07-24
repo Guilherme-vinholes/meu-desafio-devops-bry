@@ -8,8 +8,8 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TF_DIR="$ROOT_DIR/infra/terraform/environments/prod"
 INVENTORY="$ROOT_DIR/infra/ansible/inventories/prod/hosts.ini"
 
-master_ip=$(terraform -chdir="$TF_DIR" output -raw master_public_ip)
-worker_ips=$(terraform -chdir="$TF_DIR" output -json worker_public_ips | jq -r '.[]')
+master_ip=$(terraform -chdir="$TF_DIR" output -raw master_public_ip | tr -d '\r')
+worker_ips=$(terraform -chdir="$TF_DIR" output -json worker_public_ips | jq -r '.[]' | tr -d '\r')
 
 ssh_key="${SSH_PRIVATE_KEY:-~/.ssh/id_ed25519}"
 
