@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Simulador de Assinatura Digital</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="container">
+    <h1>Simulador de Assinatura Digital</h1>
+    <p class="subtitle">Desafio DevOps — API em Go, cluster Kubernetes em alta disponibilidade</p>
+
+    <section class="card">
+      <label for="document">Documento</label>
+      <textarea id="document" rows="6" placeholder="Cole aqui o texto do documento a ser assinado..."></textarea>
+      <button id="sign-btn">Assinar Digitalmente</button>
+      <p id="error" class="error hidden"></p>
+    </section>
+
+    <section id="result" class="card hidden">
+      <h2>Assinatura gerada</h2>
+      <dl>
+        <dt>ID</dt><dd id="result-id"></dd>
+        <dt>Hash (SHA-256)</dt><dd id="result-hash" class="mono"></dd>
+        <dt>Assinatura (RSA-PSS, base64)</dt><dd id="result-signature" class="mono truncate"></dd>
+        <dt>Assinado em</dt><dd id="result-date"></dd>
+        <dt>Atendido pelo pod</dt><dd id="result-host" class="mono"></dd>
+      </dl>
+    </section>
+
+    <section class="card">
+      <div class="history-header">
+        <h2>Histórico de assinaturas</h2>
+        <button id="refresh-btn">Atualizar</button>
+      </div>
+      <table id="history-table">
+        <thead>
+          <tr><th>ID</th><th>Hash</th><th>Assinado em</th><th>Pod</th></tr>
+        </thead>
+        <tbody id="history-body"></tbody>
+      </table>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  test-api:
+    name: Testes da API (Go)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+          cache-dependency-path: api/go.sum
+      - run: go vet ./...
+      - run: go build ./...
+      - run: go test ./...
+
+  build-images:
+    name: Build e push das imagens (${{ matrix.name }})
+    needs: test-api
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - name: api
+            context: api
+          - name: frontend
+            context: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login no GHCR
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # develop -> tag "develop" (homologacao); main -> tag "latest" (o que o k8s/base usa);
+      # qualquer outro caso (PR) -> so a tag do sha, sem push.
+      - name: Definir tags da imagem
+        id: tags
+        run: |
+          IMAGE="ghcr.io/${{ github.repository_owner }}/meu-desafio-devops-bry-${{ matrix.name }}"
+          IMAGE=$(echo "$IMAGE" | tr '[:upper:]' '[:lower:]')
+          SHA_TAG="${IMAGE}:${GITHUB_SHA::7}"
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            EXTRA_TAG="${IMAGE}:latest"
+          elif [ "${{ github.ref }}" = "refs/heads/develop" ]; then
+            EXTRA_TAG="${IMAGE}:develop"
+          else
+            EXTRA_TAG="$SHA_TAG"
+          fi
+          echo "tags=${SHA_TAG},${EXTRA_TAG}" >> "$GITHUB_OUTPUT"
+
+      - name: Build (push somente fora de pull_request)
+        uses: docker/build-push-action@v6
+        with:
+          context: ./${{ matrix.context }}
+          push: ${{ github.event_name == 'push' }}
+          tags: ${{ steps.tags.outputs.tags }}

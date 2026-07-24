@@ -1,0 +1,40 @@
+# Values para o chart prometheus-community/kube-prometheus-stack, ajustado para
+# caber nos recursos modestos das instancias EC2 deste desafio (t3.small/t3.micro).
+# Grafana NUNCA e exposto publicamente (sem Ingress aqui de proposito) - acesso via
+# `kubectl port-forward`, conforme a decisao de seguranca em docs/adr.
+
+grafana:
+  enabled: true
+  adminPassword: "" # defina via --set no install, nunca commitado aqui
+  resources:
+    requests:
+      cpu: 50m
+      memory: 96Mi
+    limits:
+      cpu: 200m
+      memory: 192Mi
+  service:
+    type: ClusterIP
+
+prometheus:
+  prometheusSpec:
+    retention: 3d
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 300m
+        memory: 512Mi
+
+alertmanager:
+  enabled: false # fora de escopo para o desafio - reduz consumo de memoria
+
+# kube-prometheus-stack instala varios exporters/regras pesados por padrao;
+# desabilitamos os que menos importam para uma API simples de 3 replicas.
+kubeEtcd:
+  enabled: false
+kubeControllerManager:
+  enabled: false
+kubeScheduler:
+  enabled: false

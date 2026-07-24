@@ -1,0 +1,19 @@
+---
+- name: Hardening e Docker em todos os nos do cluster
+  hosts: all
+  become: true
+  roles:
+    - hardening
+    - docker
+
+- name: Instalar K3s no master (control-plane)
+  hosts: k3s_master
+  become: true
+  roles:
+    - k3s-master
+
+- name: Instalar K3s nos workers e conecta-los ao master
+  hosts: k3s_workers
+  become: true
+  roles:
+    - k3s-worker

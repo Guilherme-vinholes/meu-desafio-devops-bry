@@ -1,0 +1,74 @@
+---
+- name: Atualizar cache do apt
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Aplicar upgrade de pacotes de seguranca
+  ansible.builtin.apt:
+    upgrade: safe
+
+- name: Instalar ufw, fail2ban e unattended-upgrades
+  ansible.builtin.apt:
+    name:
+      - ufw
+      - fail2ban
+      - unattended-upgrades
+    state: present
+
+- name: Desabilitar login de root via SSH
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PermitRootLogin'
+    line: 'PermitRootLogin no'
+  notify: Reiniciar sshd
+
+- name: Desabilitar autenticacao por senha via SSH (somente chave)
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PasswordAuthentication'
+    line: 'PasswordAuthentication no'
+  notify: Reiniciar sshd
+
+# Camada extra de defesa alem do Security Group da AWS: mesmo que uma regra do SG seja
+# alterada por engano no futuro, o firewall local ainda bloqueia o que nao deveria estar
+# aberto neste host.
+- name: "Ufw: política padrão - negar entrada"
+  community.general.ufw:
+    direction: incoming
+    policy: deny
+
+- name: "Ufw: política padrão - permitir saída"
+  community.general.ufw:
+    direction: outgoing
+    policy: allow
+
+- name: "Ufw: permitir SSH"
+  community.general.ufw:
+    rule: allow
+    port: "22"
+    proto: tcp
+
+- name: "Ufw: permitir HTTP/HTTPS (ingress)"
+  community.general.ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  loop:
+    - "80"
+    - "443"
+
+- name: "Ufw: permitir portas internas do K3s somente a partir da VPC"
+  community.general.ufw:
+    rule: allow
+    from_ip: "{{ vpc_cidr }}"
+    port: "{{ item.port }}"
+    proto: "{{ item.proto }}"
+  loop:
+    - { port: "6443", proto: "tcp" }
+    - { port: "10250", proto: "tcp" }
+    - { port: "8472", proto: "udp" }
+
+- name: "Ufw: habilitar"
+  community.general.ufw:
+    state: enabled
