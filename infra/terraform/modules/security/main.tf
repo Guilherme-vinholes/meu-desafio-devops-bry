@@ -67,7 +67,7 @@ resource "aws_security_group" "cluster_internal" {
   vpc_id      = var.vpc_id
 
   ingress {
-    description = "K3s API server (master <-> workers)"
+    description = "K3s API server (master e workers)"
     from_port   = 6443
     to_port     = 6443
     protocol    = "tcp"

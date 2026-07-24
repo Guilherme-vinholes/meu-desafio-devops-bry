@@ -33,21 +33,23 @@
 # Camada extra de defesa alem do Security Group da AWS: mesmo que uma regra do SG seja
 # alterada por engano no futuro, o firewall local ainda bloqueia o que nao deveria estar
 # aberto neste host.
-- name: "ufw: politica padrao - negar entrada, permitir saida"
+- name: "Ufw: política padrão - negar entrada"
   community.general.ufw:
-    direction: "{{ item }}"
-    policy: "{{ 'deny' if item == 'incoming' else 'allow' }}"
-  loop:
-    - incoming
-    - outgoing
+    direction: incoming
+    policy: deny
 
-- name: "ufw: permitir SSH"
+- name: "Ufw: política padrão - permitir saída"
+  community.general.ufw:
+    direction: outgoing
+    policy: allow
+
+- name: "Ufw: permitir SSH"
   community.general.ufw:
     rule: allow
     port: "22"
     proto: tcp
 
-- name: "ufw: permitir HTTP/HTTPS (ingress)"
+- name: "Ufw: permitir HTTP/HTTPS (ingress)"
   community.general.ufw:
     rule: allow
     port: "{{ item }}"
@@ -56,7 +58,7 @@
     - "80"
     - "443"
 
-- name: "ufw: permitir portas internas do K3s somente a partir da VPC"
+- name: "Ufw: permitir portas internas do K3s somente a partir da VPC"
   community.general.ufw:
     rule: allow
     from_ip: "{{ vpc_cidr }}"
@@ -67,6 +69,6 @@
     - { port: "10250", proto: "tcp" }
     - { port: "8472", proto: "udp" }
 
-- name: "ufw: habilitar"
+- name: "Ufw: habilitar"
   community.general.ufw:
     state: enabled
