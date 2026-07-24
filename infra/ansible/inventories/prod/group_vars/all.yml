@@ -1,0 +1,8 @@
+---
+k3s_version: "v1.29.4+k3s1"
+
+# Precisa bater com var.vpc_cidr do modulo terraform network (infra/terraform/modules/network) —
+# usado pelo role "hardening" para liberar no firewall local (ufw) apenas trafego
+# vindo de dentro da VPC nas portas internas do cluster (defesa em profundidade
+# alem do Security Group da AWS).
+vpc_cidr: "10.0.0.0/16"

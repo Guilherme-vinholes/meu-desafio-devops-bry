@@ -1,0 +1,14 @@
+# Copie para hosts.ini (ja esta no .gitignore) e preencha com os IPs publicos
+# que sairam do `terraform output` (infra/terraform/environments/prod).
+# Ou gere automaticamente com scripts/generate-inventory.sh
+
+[k3s_master]
+<MASTER_PUBLIC_IP> ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/id_ed25519
+
+[k3s_workers]
+<WORKER_1_PUBLIC_IP> ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/id_ed25519
+<WORKER_2_PUBLIC_IP> ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/id_ed25519
+
+[k3s_cluster:children]
+k3s_master
+k3s_workers

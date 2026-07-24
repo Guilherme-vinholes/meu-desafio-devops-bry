@@ -41,6 +41,8 @@ override.tf.json
 # Ansible
 *.retry
 .vault_pass
+infra/ansible/inventories/**/hosts.ini
+kubeconfig-prod.yaml
 
 # Secrets / env
 .env
