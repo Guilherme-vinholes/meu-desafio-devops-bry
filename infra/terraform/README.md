@@ -21,5 +21,11 @@ terraform apply
 `terraform apply` cria recursos reais e cobráveis na AWS — rode manualmente, com suas próprias
 credenciais, quando estiver pronto para provisionar. Nunca foi executado automaticamente por CI/agente.
 
+## Validação automática
+
+`.github/workflows/iac-validate.yml` roda `terraform fmt -check` + `terraform validate`
+(sem credenciais AWS) a cada PR/push que toque `infra/**`, junto com `ansible-lint` e
+`kubeconform` nos manifests k8s — ver `docs/adr/0003-cicd-github-actions.md`.
+
 Ansible entra depois do Terraform para configurar o que foi provisionado (ver `infra/ansible/`),
 usando os outputs (`master_public_ip`, `worker_public_ips`, `db_endpoint`) para montar o inventário.
