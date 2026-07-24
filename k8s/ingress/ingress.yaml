@@ -1,0 +1,27 @@
+# Regra unica de roteamento: todo trafego do host vai para o Service "frontend".
+# O proprio Nginx do frontend (infra/frontend/nginx.conf) ja faz o split interno
+# /api/* -> Service "api" - nao duplicamos essa logica aqui no Ingress.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bry-desafio
+  namespace: bry-desafio
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - assinatura.SEUDOMINIO.com.br # trocar pelo dominio real antes de aplicar
+      secretName: bry-desafio-tls
+  rules:
+    - host: assinatura.SEUDOMINIO.com.br
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 80
