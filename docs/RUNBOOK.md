@@ -60,6 +60,16 @@ Aponte um registro A do seu domínio (ex: `assinatura.seudominio.com.br`) para o
 `master_public_ip` (ou qualquer worker) do passo 1. Sem isso, o desafio HTTP-01 do
 cert-manager falha no passo 5, e o `Ingress` do passo 6 não tem para onde apontar.
 
+**Sem domínio próprio à mão:** o hostname público que a própria AWS gera para a EC2
+(`ec2-<ip-com-tracos>.compute-1.amazonaws.com`) parece prático — resolve na hora, sem
+configurar nada — mas **a Let's Encrypt recusa emitir certificado para qualquer
+subdomínio de `amazonaws.com`** (`rejectedIdentifier: ... forbidden by policy`, é uma
+blocklist deles contra abuso de domínios de clouds públicas). Alternativa que funciona
+e também não exige configurar nada: um serviço de "DNS mágico" como
+[sslip.io](https://sslip.io) — `<ip-publico>.sslip.io` (ex: `98.92.167.51.sslip.io`)
+resolve para o próprio IP embutido no hostname, sem propagação, e não está na
+blocklist da Let's Encrypt.
+
 ## 5. cert-manager
 
 ```bash
