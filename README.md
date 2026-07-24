@@ -42,7 +42,10 @@ scripts/        Scripts auxiliares
 
 ## Documentação
 
-Decisões técnicas e seus motivos estão registradas em `docs/adr/`. O vídeo tutorial demonstrando a criação do ambiente será linkado aqui ao final do projeto.
+Decisões técnicas e seus motivos estão registradas em `docs/adr/`. O passo a passo
+completo de deploy (do `terraform apply` ao HTTPS funcionando) está em
+`docs/RUNBOOK.md`. O vídeo tutorial demonstrando a criação do ambiente será linkado
+aqui ao final do projeto.
 
 ## Status
 
