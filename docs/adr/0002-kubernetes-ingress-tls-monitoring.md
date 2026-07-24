@@ -34,8 +34,18 @@ HTTP(S), o certificado TLS automático e o monitoramento.
   desabilitados**: o K3s embute o control-plane de um jeito que não expõe essas métricas
   do jeito que o chart (pensado para kubeadm) espera — deixá-los ligados só gera alvos de
   scrape permanentemente down.
-- **`alertmanager` desabilitado**: fora do escopo do desafio (não há canal de alerta —
-  Slack/PagerDuty — configurado), e reduz o consumo de memória nas instâncias pequenas.
+- **`alertmanager` habilitado** (revertido no hotfix `1.0.2`, ver Release Notes):
+  inicialmente desligado por economia de memória nas instâncias pequenas, mas
+  "monitoramento e alertas" é item explícito do desafio, não bônus — religado com o
+  receiver `null` default do chart (avalia e recebe os alertas do Prometheus, mas não
+  notifica ninguém, já que nenhum canal — Slack/e-mail/PagerDuty — está disponível
+  neste ambiente). Trocar o receiver por um real é mudança de `values.yaml`, não de
+  arquitetura.
+- **HorizontalPodAutoscaler em `api` e `frontend`** (adicionado no hotfix `1.0.2`):
+  usa o metrics-server já embutido no K3s (nenhuma instalação extra necessária).
+  `minReplicas` mantém o piso de HA de cada Deployment; escala por utilização de CPU
+  (`averageUtilization: 70`), já que os `resources.requests.cpu` necessários para o
+  HPA calcular a métrica já existiam nos Deployments desde o bry-006.
 
 ## Consequências
 

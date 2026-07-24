@@ -5,7 +5,9 @@ resources:
   - namespace.yaml
   - api-deployment.yaml
   - api-service.yaml
+  - api-hpa.yaml
   - frontend-deployment.yaml
   - frontend-service.yaml
+  - frontend-hpa.yaml
 # api-secret.yaml (gerado a partir de api-secret.example.yaml) e aplicado
 # separadamente, nunca commitado - nao entra neste kustomization.
