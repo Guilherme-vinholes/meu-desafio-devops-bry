@@ -1,0 +1,68 @@
+name: Validação de IaC
+
+# terraform/ansible/kubectl nao estao instalados na maquina de desenvolvimento (ver ADRs) -
+# este workflow e a unica validacao real (sintaxe/schema) que o codigo de infra recebe
+# antes de alguem rodar `terraform apply`/`ansible-playbook` de verdade.
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - "infra/**"
+      - "k8s/**"
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - "infra/**"
+      - "k8s/**"
+
+jobs:
+  terraform:
+    name: terraform fmt + validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.8"
+      - name: terraform fmt (checa formatacao de todos os modulos)
+        run: terraform fmt -check -recursive infra/terraform
+      - name: terraform init (sem backend remoto, sem credenciais AWS)
+        working-directory: infra/terraform/environments/prod
+        run: terraform init -backend=false
+      - name: terraform validate
+        working-directory: infra/terraform/environments/prod
+        run: terraform validate
+
+  ansible:
+    name: ansible-lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install ansible ansible-lint
+      - run: ansible-galaxy collection install -r requirements.yml
+        working-directory: infra/ansible
+      - run: ansible-lint site.yml
+        working-directory: infra/ansible
+
+  kubernetes:
+    name: kubeconform (manifests k8s)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Instalar kubeconform
+        run: |
+          curl -sSL https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz | tar xz
+          sudo mv kubeconform /usr/local/bin/
+      - name: Validar manifests (kinds nativos do k8s - CRDs como ClusterIssuer ficam de fora, sem schema disponivel)
+        run: |
+          kubeconform -strict -summary \
+            k8s/base/namespace.yaml \
+            k8s/base/api-deployment.yaml \
+            k8s/base/api-service.yaml \
+            k8s/base/api-secret.example.yaml \
+            k8s/base/frontend-deployment.yaml \
+            k8s/base/frontend-service.yaml \
+            k8s/ingress/ingress.yaml
