@@ -12,10 +12,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - assinatura.SEUDOMINIO.com.br # trocar pelo dominio real antes de aplicar
+        - ec2-98-92-167-51.compute-1.amazonaws.com
       secretName: bry-desafio-tls
   rules:
-    - host: assinatura.SEUDOMINIO.com.br
+    - host: ec2-98-92-167-51.compute-1.amazonaws.com
       http:
         paths:
           - path: /

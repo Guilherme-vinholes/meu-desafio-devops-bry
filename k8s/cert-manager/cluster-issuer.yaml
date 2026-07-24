@@ -9,7 +9,7 @@ metadata:
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
-    email: SEU-EMAIL@dominio.com.br # trocar antes de aplicar
+    email: guilherme.goncalves@moovefy.com.br
     privateKeySecretRef:
       name: letsencrypt-prod-account-key
     solvers:
