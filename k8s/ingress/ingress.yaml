@@ -12,10 +12,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - ec2-98-92-167-51.compute-1.amazonaws.com
+        - 98.92.167.51.sslip.io
       secretName: bry-desafio-tls
   rules:
-    - host: ec2-98-92-167-51.compute-1.amazonaws.com
+    - host: 98.92.167.51.sslip.io
       http:
         paths:
           - path: /
